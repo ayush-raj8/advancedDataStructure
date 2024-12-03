@@ -1,3 +1,3 @@
-module github.com/ayush-raj8/go-collection
+module github.com/ayush-raj8/advancedDataStructure
 
 go 1.19

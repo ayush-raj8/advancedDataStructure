@@ -11,4 +11,4 @@ A Go library providing a collection of data structures. The library currently in
 ## Installation
 
 ```bash
-go get github.com/ayush-raj8/go-collection
+go get github.com/ayush-raj8/advancedDataStructure
