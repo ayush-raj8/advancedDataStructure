@@ -120,15 +120,13 @@ func (s *Set[T]) IsSuperset(other *Set[T]) bool {
 	return other.IsSubset(s)
 }
 
-// Clear removes all elements from the set.
 func (s *Set[T]) Clear() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.elements = make(map[T]struct{})
 }
 
-// Iterate returns a channel to traverse the elements of the set.
-func (s *Set[T]) Iterate() <-chan T {
+func (s *Set[T]) Iterator() <-chan T {
 	ch := make(chan T)
 	go func() {
 		s.mu.RLock()
@@ -139,16 +137,6 @@ func (s *Set[T]) Iterate() <-chan T {
 		close(ch)
 	}()
 	return ch
-}
-
-// ContainsAll checks if all elements in the other set are contained in the current set.
-func (s *Set[T]) ContainsAll(other *Set[T]) bool {
-	for _, elem := range other.ToSlice() {
-		if !s.Contains(elem) {
-			return false
-		}
-	}
-	return true
 }
 
 // ForEach applies the provided function to each element in the set.
@@ -239,13 +227,19 @@ func (s *Set[T]) Reverse() *Set[T] {
 }
 
 // DifferenceCount returns the number of elements in the first set but not in the second.
-func (s *Set[T]) DifferenceCount(other *Set[T]) int {
+func (s *Set[T]) DifferenceCount(other any) int {
+	otherSet, ok := other.(*Set[T])
+	if !ok {
+		return s.Size()
+	}
+
 	count := 0
 	s.ForEach(func(elem T) {
-		if !other.Contains(elem) {
+		if !otherSet.Contains(elem) {
 			count++
 		}
 	})
+
 	return count
 }
 
@@ -259,11 +253,14 @@ func (s *Set[T]) Clone() *Set[T] {
 }
 
 // IsDisjoint checks if the current set and the other set have no elements in common.
-func (s *Set[T]) IsDisjoint(other *Set[T]) bool {
-	for _, elem := range s.ToSlice() {
-		if other.Contains(elem) {
-			return false
+func (s *Set[T]) IsDisjoint(other any) bool {
+	if otherSet, ok := other.(*Set[T]); ok {
+		for _, elem := range s.ToSlice() {
+			if otherSet.Contains(elem) {
+				return false
+			}
 		}
+		return true
 	}
 	return true
 }

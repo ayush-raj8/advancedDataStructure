@@ -76,7 +76,7 @@ func (l *List) Slice(params ...int) (*List, error) {
 	case 3:
 		start, end, step = params[0], params[1], params[2]
 	}
-
+	fmt.Println(start, end, step)
 	if step == 0 {
 		return nil, errors.New("step cannot be zero")
 	}
@@ -90,18 +90,16 @@ func (l *List) Slice(params ...int) (*List, error) {
 		end += n
 	}
 
-	// Clamp indices to valid range
 	if start < 0 {
 		start = 0
 	}
 	if end > n {
 		end = n
 	}
-	if start >= n || end < 0 || start >= end {
-		return &List{}, nil // Return an empty list for invalid ranges
+	if start >= n || end < 0 || (start >= end && step > 0) || (start <= end && step < 0) {
+		return &List{}, nil
 	}
 
-	// Create the sliced list
 	slicedData := []any{}
 	if step > 0 {
 		for i := start; i < end; i += step {
@@ -229,8 +227,4 @@ func isNumericBoolType(t reflect.Type) bool {
 	default:
 		return false
 	}
-}
-
-func (l *List) Display() {
-	fmt.Println(l.data)
 }

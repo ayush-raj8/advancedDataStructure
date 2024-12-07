@@ -204,6 +204,16 @@ func TestSlice(t *testing.T) {
 	if !reflect.DeepEqual(slicedList.data, []any{1, 2, 3, 4}) {
 		t.Fatalf("Expected [1, 2, 3, 4], got: %v", slicedList.data)
 	}
+	_, err = l.Slice(0, 4, 0)
+
+	if err == nil {
+		t.Fatalf("Expected error, got nil")
+	}
+
+	if err.Error() != "step cannot be zero" {
+		t.Fatalf("Expected error 'step cannot be zero', got: %v", err)
+	}
+
 }
 
 func TestSort(t *testing.T) {
@@ -234,6 +244,25 @@ func TestSort(t *testing.T) {
 		t.Fatalf("Expected [3, 2.5, 2, true, 1, false], got: %v", l.data)
 	}
 
+	sliced, err := l.Slice(-1)
+	if err != nil {
+		t.Fatalf("Expected no error, got: %v", err)
+	}
+
+	if !reflect.DeepEqual(sliced.data, []any{false}) {
+		t.Fatalf("Expected [false], got: %v", sliced.data)
+	}
+
+	sliced, err = l.Slice(3, 0, -1)
+	if err != nil {
+		t.Fatalf("Expected no error, got: %v", err)
+	}
+
+	expected := []any{1, 2, 2.5}
+	if !reflect.DeepEqual(sliced.data, expected) {
+		t.Fatalf("Expected %v, got: %v", expected, sliced.data)
+	}
+
 	l2 := New()
 	l2.Append("a")
 	l2.Append("c")
@@ -256,5 +285,66 @@ func TestSort(t *testing.T) {
 
 	if !reflect.DeepEqual(l2.data, []any{"c", "b", "a", "1"}) {
 		t.Fatalf("Expected [c, b, a, 1], got: %v", l2.data)
+	}
+
+	l3 := New()
+	l3.Append(1)
+	l3.Append("ABC")
+	l3.Append(3)
+	err = l3.Sort()
+
+	if err == nil {
+		t.Fatalf("Expected error, got nil")
+	}
+
+	if err.Error() != "cannot sort a list with mixed data types" {
+		t.Fatalf("Expected error 'cannot sort a list with mixed data types', got: %v", err)
+	}
+
+	l4 := New()
+	err = l4.Sort()
+	if err != nil {
+		t.Fatalf("Expected nil, got error %v", err)
+	}
+
+	type Person struct {
+		Name string
+		Age  int
+	}
+
+	l5 := New()
+	person1 := Person{Name: "Alice", Age: 25}
+	person2 := Person{Name: "Bob", Age: 30}
+	l5.Append(person1)
+	l5.Append(person2)
+	err = l5.Sort()
+
+	if err == nil {
+		t.Fatalf("Expected eror, got nil")
+	}
+
+	if err.Error() != "unsupported type for sorting" {
+		t.Fatalf("Expected error 'unsupported type for sorting', got: %v", err)
+	}
+}
+
+func TestIterator(t *testing.T) {
+	l := New()
+	l.Append(3)
+	l.Append(1)
+	l.Append(2)
+	l.Append(2.5)
+	l.Append(true)
+	l.Append(false)
+
+	var result []any
+	for v := range l.Iterator() {
+		result = append(result, v)
+	}
+
+	expected := []any{3, 1, 2, 2.5, true, false}
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Fatalf("Expected result %v, got: %v", expected, result)
 	}
 }
