@@ -4,7 +4,7 @@ import "sync"
 
 // Set is a thread-safe implementation of a set data structure.
 type Set[T comparable] struct {
-	elements map[T]struct{}
+	elements map[T]struct{} // struct is 0 sized
 	mu       sync.RWMutex
 }
 
