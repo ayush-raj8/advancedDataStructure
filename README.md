@@ -1,4 +1,4 @@
-# go-collection
+# advancedDataStructure
 [![Go Reference](https://pkg.go.dev/badge/github.com/ayush-raj8/advancedDataStructure.svg)](https://pkg.go.dev/github.com/ayush-raj8/advancedDataStructure)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ayush-raj8/advancedDataStructure)](https://goreportcard.com/report/github.com/ayush-raj8/advancedDataStructure)
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://github.com/ayush-raj8/advancedDataStructure/blob/main/LICENSE)
